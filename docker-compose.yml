@@ -1,63 +1,62 @@
-
 services:
   fastapi:
     build: .
-    container_name: template-fastapi-01
+    container_name: ${PROJECT_NAME}-fastapi-${SUFFIX}
     ports:
-      - "8101:8000"
+      - "${FASTAPI_PORT}:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - postgres
       - redis
     networks:
-      - template-network
+      - ${PROJECT_NAME}-network
 
   postgres:
     image: postgres:15-alpine
-    container_name: template-postgres-01
+    container_name: ${PROJECT_NAME}-postgres-${SUFFIX}
     ports:
-      - "5401:5432"
+      - "${POSTGRES_PORT}:5432"
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
-      - template-network
+      - ${PROJECT_NAME}-network
 
   redis:
     image: redis:7-alpine
-    container_name: template-redis-01
+    container_name: ${PROJECT_NAME}-redis-${SUFFIX}
     networks:
-      - template-network
+      - ${PROJECT_NAME}-network
 
   celery:
     build: .
-    container_name: template-celery-01
+    container_name: ${PROJECT_NAME}-celery-${SUFFIX}
     command: ["celery", "-A", "src.workers.celery_app", "worker", "--loglevel=info"]
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - postgres
       - redis
     networks:
-      - template-network
+      - ${PROJECT_NAME}-network
 
   flower:
     build: .
-    container_name: template-flower-01
+    container_name: ${PROJECT_NAME}-flower-${SUFFIX}
     command: ["celery", "-A", "src.workers.celery_app", "flower", "--port=5555"]
     ports:
-      - "5501:5555"
+      - "${FLOWER_PORT}:5555"
     environment:
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - redis
     networks:
-      - template-network
+      - ${PROJECT_NAME}-network
 
 networks:
-  template-network:
+  ${PROJECT_NAME}-network:
     driver: bridge
