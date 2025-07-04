@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  fastapi:
+    build: .
+    container_name: template-fastapi-01
+    ports:
+      - "8101:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - template-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: template-postgres-01
+    ports:
+      - "5401:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - template-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: template-redis-01
+    networks:
+      - template-network
+
+  celery:
+    build: .
+    container_name: template-celery-01
+    command: ["celery", "-A", "src.workers.celery_app", "worker", "--loglevel=info"]
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - template-network
+
+  flower:
+    build: .
+    container_name: template-flower-01
+    command: ["celery", "-A", "src.workers.celery_app", "flower", "--port=5555"]
+    ports:
+      - "5501:5555"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+    networks:
+      - template-network
+
+networks:
+  template-network:
+    driver: bridge
