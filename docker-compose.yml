@@ -11,7 +11,7 @@ services:
       - postgres
       - redis
     networks:
-      - ${PROJECT_NAME}-network
+      - microservice-network
 
   postgres:
     image: postgres:15-alpine
@@ -23,13 +23,13 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
-      - ${PROJECT_NAME}-network
+      - microservice-network
 
   redis:
     image: redis:7-alpine
     container_name: ${PROJECT_NAME}-redis-${SUFFIX}
     networks:
-      - ${PROJECT_NAME}-network
+      - microservice-network
 
   celery:
     build: .
@@ -42,7 +42,7 @@ services:
       - postgres
       - redis
     networks:
-      - ${PROJECT_NAME}-network
+      - microservice-network
 
   flower:
     build: .
@@ -55,8 +55,8 @@ services:
     depends_on:
       - redis
     networks:
-      - ${PROJECT_NAME}-network
+      - microservice-network
 
 networks:
-  ${PROJECT_NAME}-network:
+  microservice-network:
     driver: bridge
