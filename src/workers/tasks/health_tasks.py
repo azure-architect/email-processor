@@ -1,7 +1,7 @@
 """Essential health check tasks."""
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from ..celery_app import celery_app
 
 logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ def health_ping(self):
     try:
         return {
             "status": "healthy",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "worker_id": self.request.id,
             "message": "Worker is responsive"
         }
@@ -20,6 +20,6 @@ def health_ping(self):
         logger.error(f"Health ping failed: {e}")
         return {
             "status": "unhealthy",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "error": str(e)
         }

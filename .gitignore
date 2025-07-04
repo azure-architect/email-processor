@@ -25,3 +25,7 @@ Thumbs.db
 
 # Generated files
 *.backup
+
+# Virtual Environment
+venv/
+env/
