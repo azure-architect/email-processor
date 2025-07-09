@@ -12,7 +12,7 @@ from datetime import datetime
 # Check for macOS for system-level text-to-speech
 IS_MACOS = sys.platform == "darwin"
 
-def say_text(text, voice="Daniel"):
+def say_text(text, voice="Allison"):
     """
     Speak the provided text using system text-to-speech.
     Currently supports macOS using the 'say' command.

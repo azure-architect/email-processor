@@ -70,6 +70,7 @@ class EmailMessage(Base):
     is_deleted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_draft: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_answered: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_archived: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     
     # Processing metadata
     processed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)

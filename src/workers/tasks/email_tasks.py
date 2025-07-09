@@ -285,60 +285,46 @@ def process_email_message(self, message_id: str) -> Dict[str, any]:
 
 
 @celery_app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 60})
-def cleanup_old_messages(self, days_old: int = 30) -> Dict[str, any]:
+def archive_old_messages(self, days_old: int = 7) -> Dict[str, any]:
     """
-    Clean up old email messages to manage database size.
+    Archive old email messages weekly to keep active messages manageable.
     
     Args:
-        days_old: Number of days old messages to keep
+        days_old: Number of days old messages to archive (default: 7 days)
         
     Returns:
-        Dict with cleanup results
+        Dict with archive results
     """
     session = SessionLocal()
     try:
         cutoff_date = datetime.utcnow() - timedelta(days=days_old)
         
-        # Delete old messages
-        deleted_count = session.query(EmailMessage).filter(
+        # Archive old messages (mark as archived, don't delete)
+        archived_count = session.query(EmailMessage).filter(
             EmailMessage.created_at < cutoff_date,
-            EmailMessage.is_deleted == True
-        ).delete()
+            EmailMessage.is_archived == False,
+            EmailMessage.is_deleted == False
+        ).update({"is_archived": True})
         
         session.commit()
         
         result = {
             "status": "completed",
-            "messages_deleted": deleted_count,
-            "cutoff_date": cutoff_date.isoformat()
+            "messages_archived": archived_count,
+            "cutoff_date": cutoff_date.isoformat(),
+            "archive_threshold_days": days_old
         }
         
-        logger.info(f"Cleanup completed: {result}")
+        logger.info(f"Archive completed: {result}")
         return result
         
     except Exception as e:
-        logger.error(f"Cleanup failed: {e}")
+        logger.error(f"Archive failed: {e}")
         session.rollback()
         raise
     finally:
         session.close()
 
 
-# Periodic tasks configuration
-@celery_app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    """Setup periodic tasks for email processing."""
-    
-    # Sync all accounts every 15 minutes
-    sender.add_periodic_task(
-        900.0,  # 15 minutes
-        sync_all_active_accounts.s(),
-        name='sync_all_accounts_every_15min'
-    )
-    
-    # Cleanup old messages daily at 2 AM
-    sender.add_periodic_task(
-        crontab(hour=2, minute=0),
-        cleanup_old_messages.s(days_old=30),
-        name='cleanup_old_messages_daily'
-    )
+# Periodic tasks are now configured in celery_app.py beat_schedule
+# This ensures they are loaded consistently in beat and worker processes

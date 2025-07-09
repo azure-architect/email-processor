@@ -460,14 +460,5 @@ def process_all_attachments(self) -> Dict[str, any]:
         raise
 
 
-# Add periodic task for attachment processing
-@celery_app.on_after_configure.connect
-def setup_attachment_processing_tasks(sender, **kwargs):
-    """Setup periodic tasks for attachment processing."""
-    
-    # Process attachments every 30 minutes
-    sender.add_periodic_task(
-        1800.0,  # 30 minutes
-        process_all_attachments.s(),
-        name='process_attachments_every_30min'
-    )
+# Periodic tasks are now configured in celery_app.py beat_schedule
+# This ensures they are loaded consistently in beat and worker processes

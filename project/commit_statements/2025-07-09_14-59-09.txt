@@ -1,0 +1,14 @@
+feat(celery): add beat scheduler and enhance email processing with attachment content storage
+
+- Add Celery Beat service to docker-compose for scheduled tasks
+- Implement five-minute-timer task that runs every 5 minutes
+- Update email processing to store attachment content as base64 encoded strings
+- Add content column to EmailAttachment model for storing binary data
+- Enhance IMAP service to fetch actual attachment content
+- Add pandas and chardet dependencies for CSV processing
+- Update Claude Code hooks with improved logging and state management
+- Make all hook files executable
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
