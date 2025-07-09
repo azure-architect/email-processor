@@ -1,0 +1,12 @@
+# Claude Code Hooks Configuration
+# Docs: https://docs.anthropic.com/en/docs/claude-code/hooks
+
+# Example hook structure (commented out)
+# [[hooks]]
+# event = "PreToolUse"
+# [hooks.matcher]
+# tool_name = "edit_file"
+# command = "echo 'About to edit a file'"
+
+# Add your hooks below:
+
