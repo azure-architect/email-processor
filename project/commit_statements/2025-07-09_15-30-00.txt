@@ -1,0 +1,20 @@
+Move CLAUDE.md from project/ directory to root for better visibility
+
+- Relocated CLAUDE.md from project/ subdirectory to repository root
+- Improved accessibility for AI assistants and developers
+- Enhanced visibility of collaboration guidelines and constraints
+- Maintained all content and formatting intact
+
+Technical details:
+- Simple file move operation without content modification
+- Preserves all collaboration guidelines and IADPVEC methodology
+- Follows standard documentation convention for important files
+- Better aligns with typical repository structure where key docs are in root
+
+Follows patterns from:
+- Standard repository organization where key docs (README.md, CONTRIBUTING.md) are in root
+- Best practices for making important documentation immediately visible
+
+Resolves: Improve visibility and accessibility of collaboration guidelines
+Files: CLAUDE.md, project/CLAUDE.md (removed)
+Tests: File accessibility verified in root directory

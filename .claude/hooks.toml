@@ -1,12 +1,226 @@
 # Claude Code Hooks Configuration
-# Docs: https://docs.anthropic.com/en/docs/claude-code/hooks
+# These hooks automate the behaviors previously triggered by shortcuts
 
-# Example hook structure (commented out)
-# [[hooks]]
-# event = "PreToolUse"
-# [hooks.matcher]
-# tool_name = "edit_file"
-# command = "echo 'About to edit a file'"
+[[hooks]]
+name = "best_practices_reminder"
+event = "MessageReceived"
+[hooks.matcher]
+pattern = "QNEW"
+[hooks.action]
+instructions = """
+Understand all BEST PRACTICES listed in CLAUDE.md.
+Your code SHOULD ALWAYS follow these best practices.
+"""
 
-# Add your hooks below:
+[[hooks]]
+name = "plan_analysis"
+event = "MessageReceived"
+[hooks.matcher]
+pattern = "QPLAN"
+[hooks.action]
+instructions = """
+Analyze similar parts of the codebase and determine whether your plan:
+- is consistent with rest of codebase
+- introduces minimal changes
+- reuses existing code
+"""
 
+[[hooks]]
+name = "code_implementation"
+event = "MessageReceived"
+[hooks.matcher]
+pattern = "QCODE"
+[hooks.action]
+instructions = """
+Implement your plan and make sure your new tests pass.
+Always run tests to make sure you didn't break anything else.
+Always run `black .` on the newly created files to ensure standard formatting.
+Always run `ruff check .` and `mypy .` to make sure linting and type checking passes.
+"""
+
+[[hooks]]
+name = "code_review"
+event = "MessageReceived"
+[hooks.matcher]
+pattern = "QCHECK"
+[hooks.action]
+instructions = """
+You are a SKEPTICAL senior software engineer.
+Perform this analysis for every MAJOR code change you introduced (skip minor changes):
+
+1. CLAUDE.md checklist Writing Functions Best Practices.
+2. CLAUDE.md checklist Writing Tests Best Practices.
+3. CLAUDE.md checklist Implementation Best Practices.
+"""
+
+[[hooks]]
+name = "function_review"
+event = "MessageReceived"
+[hooks.matcher]
+pattern = "QCHECKF"
+[hooks.action]
+instructions = """
+You are a SKEPTICAL senior software engineer.
+Perform this analysis for every MAJOR function you added or edited (skip minor changes):
+
+1. CLAUDE.md checklist Writing Functions Best Practices.
+"""
+
+[[hooks]]
+name = "test_review"
+event = "MessageReceived"
+[hooks.matcher]
+pattern = "QCHECKT"
+[hooks.action]
+instructions = """
+You are a SKEPTICAL senior software engineer.
+Perform this analysis for every MAJOR test you added or edited (skip minor changes):
+
+1. CLAUDE.md checklist Writing Tests Best Practices.
+"""
+
+[[hooks]]
+name = "ux_testing"
+event = "MessageReceived"
+[hooks.matcher]
+pattern = "QUX"
+[hooks.action]
+instructions = """
+Imagine you are a human UX tester of the feature you implemented. 
+Output a comprehensive list of scenarios you would test, sorted by highest priority.
+"""
+
+[[hooks]]
+name = "git_commit"
+event = "MessageReceived"
+[hooks.matcher]
+pattern = "QGIT"
+[hooks.action]
+instructions = """
+Add all changes to staging, create a commit, and push to remote.
+
+Write a text version of the commit message to a timestamped file (format: YYYY-MM-DD_HH-MM-SS.txt) and place it in the project/commit_statements directory.
+
+Follow this checklist for writing your commit message:
+- SHOULD use Conventional Commits format: https://www.conventionalcommits.org/en/v1.0.0
+- SHOULD NOT refer to Claude or Anthropic in the commit message.
+- SHOULD structure commit message as follows:
+<type>[optional scope]: <description>
+[optional body]
+[optional footer(s)]
+"""
+
+# Add file-specific hooks that trigger based on operations
+
+[[hooks]]
+name = "python_code_quality_check"
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+pattern = ".*\\.py$"
+[hooks.action]
+instructions = """
+I notice you've just edited a Python file. Let me check the quality:
+
+1. Are there type hints for all parameters and return values?
+2. Is the code following PEP 8 naming conventions?
+3. Are there appropriate docstrings?
+4. Does the code handle errors properly?
+5. Is there any unnecessary complexity?
+
+I'll suggest improvements if needed.
+"""
+
+[[hooks]]
+name = "test_file_check"
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+pattern = ".*test_.*\\.py$"
+[hooks.action]
+instructions = """
+I notice you've just edited a test file. Let me check the test quality:
+
+1. Are tests parameterized where appropriate?
+2. Do assertions match the test description?
+3. Are edge cases covered?
+4. Is there any unnecessary complexity?
+
+I'll suggest improvements if needed.
+"""
+
+[[hooks]]
+name = "new_file_template"
+event = "PreToolUse"
+[hooks.matcher]
+tool_name = "write_file"
+pattern = ".*\\.py$"
+[hooks.action]
+instructions = """
+I see you're creating a new Python file. I'll ensure it follows our standards:
+
+1. Include appropriate imports
+2. Add module docstring
+3. Use proper type hints
+4. Follow project structure conventions
+5. Add __future__ annotations import if needed
+
+I'll structure this file according to our best practices.
+"""
+
+# Add IADPVEC workflow hooks
+
+[[hooks]]
+name = "iadpvec_task_proposal"
+event = "MessageReceived"
+[hooks.matcher]
+pattern = "PROPOSE_TASK"
+[hooks.action]
+instructions = """
+I'll help you create a new task proposal following the IADPVEC methodology.
+
+Let me guide you through:
+1. INGEST: Gathering context
+2. ASSESS: Analyzing current state
+3. DISCUSS: Proposing solutions
+
+I'll create a structured task proposal based on our discussion.
+"""
+
+[[hooks]]
+name = "iadpvec_task_validation"
+event = "MessageReceived"
+[hooks.matcher]
+pattern = "VALIDATE_TASK"
+[hooks.action]
+instructions = """
+I'll help validate the completed task implementation against success criteria.
+
+Let me check:
+1. Component verification
+2. Feature verification
+3. Success criteria validation
+4. Technical implementation notes
+5. Deployment readiness
+
+I'll create a comprehensive validation report.
+"""
+
+[[hooks]]
+name = "project_status_update"
+event = "MessageSent"
+description = "Periodically remind to update project status"
+[hooks.matcher]
+count = 10
+[hooks.action]
+instructions = """
+Reminder: Consider creating a project status update file to document our progress.
+
+This helps with:
+- Tracking IADPVEC phase
+- Documenting decisions
+- Preserving context for future sessions
+- Recording implementation details
+
+Would you like me to help create a status update?
+"""

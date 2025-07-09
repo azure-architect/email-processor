@@ -269,6 +269,30 @@ class User(Base):
 
 ---
 
+## 🪝 Claude Code Hooks
+
+This project uses Claude Code hooks to automate IADPVEC workflow and enforce quality standards.
+
+### Automated Hooks
+- **PreToolUse** - Quality checks before file edits
+- **PostToolUse** - Formatting, testing, and documentation checks after edits
+- **TaskCompletion** - Automated project status updates and commit statements
+- **Notification** - Tracking of significant events and phase transitions
+
+### Custom CI/CD Integration
+- **State Management** - Automated tracking of IADPVEC phases and task progress
+- **CI/CD Pipeline** - Automatic generation of GitHub Actions workflows
+- **Documentation Validation** - Enforcement of documentation standards
+- **Testing Integration** - Automated test runs for modified files
+
+### Using Hooks Effectively
+- Let the hooks handle routine tasks (formatting, testing, documentation)
+- Review generated project status updates for accuracy
+- Modify `.claude/hooks.toml` to customize hook behavior
+- Use the state management system to track progress (`python .claude/scripts/state_manager.py summary`)
+
+---
+
 ## 📈 Success Metrics for AI Collaboration
 
 ### Quality Metrics
@@ -282,9 +306,10 @@ class User(Base):
 - **Explicit permissions** - Seeks approval before implementation
 - **Knowledge preservation** - Creates thorough project status updates
 - **Commit quality** - Detailed commit statements with context
+- **Hook integration** - Effective use of Claude Code hooks for automation
 
 ---
 
 *These guidelines ensure consistent, high-quality AI-assisted development following proven methodologies. They establish clear expectations for all AI-human collaboration within this project.*
 
-**Last Updated:** 2025-07-08 - Initial guidelines created
+**Last Updated:** 2025-07-09 - Added Claude Code hooks documentation
