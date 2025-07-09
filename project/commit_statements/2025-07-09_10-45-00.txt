@@ -1,0 +1,21 @@
+feat(email): implement complete email processor with IMAP integration
+
+- Add IMAP client libraries and email validation dependencies
+- Create comprehensive email database schema with SQLAlchemy models
+- Implement async IMAP service with connection management
+- Add email processing Celery tasks with background sync
+- Create database migration for email tables
+- Add email account, message, and attachment models
+- Implement email retrieval and parsing with attachment support
+- Add test scripts for IMAP connection and email processing
+- Configure automatic email sync every 15 minutes
+- Support duplicate prevention and error handling
+
+Successfully tested with real email server:
+- Connected to mail.digitalexpat.online
+- Retrieved 50 emails with 11 attachments
+- Stored all data in PostgreSQL database
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>

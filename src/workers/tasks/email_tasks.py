@@ -115,13 +115,21 @@ def sync_email_account(self, account_id: str) -> Dict[str, any]:
                         
                         # Process attachments
                         for attachment_data in attachments:
+                            # Convert binary content to base64 string for storage
+                            content = attachment_data.get("content")
+                            content_base64 = None
+                            if content:
+                                import base64
+                                content_base64 = base64.b64encode(content).decode('utf-8')
+                            
                             attachment = EmailAttachment(
                                 message_id=email_message.id,
                                 filename=attachment_data["filename"],
                                 content_type=attachment_data["content_type"],
                                 size=attachment_data["size"],
                                 content_disposition=attachment_data.get("content_disposition"),
-                                content_id=attachment_data.get("content_id")
+                                content_id=attachment_data.get("content_id"),
+                                content=content_base64  # Store base64 encoded content
                             )
                             session.add(attachment)
                         

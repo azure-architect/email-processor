@@ -97,6 +97,7 @@ class EmailAttachment(Base):
     # File storage
     file_path: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     file_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    content: Mapped[Optional[bytes]] = mapped_column(Text, nullable=True)  # Store base64 encoded content
     
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

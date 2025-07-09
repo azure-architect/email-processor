@@ -168,8 +168,8 @@ class IMAPService:
             logger.error(f"Failed to fetch message body for ID {message_id}: {e}")
             raise
 
-    async def fetch_message_attachments(self, message_id: int) -> List[Dict[str, str]]:
-        """Fetch message attachments metadata."""
+    async def fetch_message_attachments(self, message_id: int) -> List[Dict[str, any]]:
+        """Fetch message attachments with content."""
         if not self.client:
             raise RuntimeError("Not connected to IMAP server")
         
@@ -188,12 +188,16 @@ class IMAPService:
                     if "attachment" in content_disposition:
                         filename = part.get_filename()
                         if filename:
+                            # Get the actual content
+                            content = part.get_payload(decode=True)
+                            
                             attachments.append({
                                 "filename": filename,
                                 "content_type": part.get_content_type(),
-                                "size": len(part.get_payload(decode=True) or b""),
+                                "size": len(content) if content else 0,
                                 "content_disposition": content_disposition,
                                 "content_id": part.get("Content-ID", ""),
+                                "content": content  # Include the actual content
                             })
             
             return attachments

@@ -232,6 +232,68 @@ def update_state_document(extracted_info):
     
     return True
 
+def generate_completion_message():
+    """Generate a natural-sounding completion message."""
+    messages = [
+        "All set and ready for your next step.",
+        "Task completed successfully.",
+        "Finished processing your request.",
+        "Operation completed.",
+        "Command executed successfully.",
+        "Task finished, ready for your next instruction.",
+        "All done and ready for your next command.",
+        "Processing complete.",
+    ]
+    
+    # Use a simple approach - random selection
+    import random
+    return random.choice(messages)
+
+def say_text(text, voice="Daniel"):
+    """
+    Speak the provided text using system text-to-speech.
+    Currently supports macOS using the 'say' command.
+    
+    Args:
+        text: The text to speak
+        voice: The voice to use (macOS only)
+    """
+    # Check for macOS for system-level text-to-speech
+    if sys.platform == "darwin":
+        try:
+            subprocess.run(["say", "-v", voice, text], check=True)
+            return True
+        except Exception as e:
+            print(f"Error using text-to-speech: {e}", file=sys.stderr)
+            return False
+    else:
+        print(f"Text-to-speech is currently only supported on macOS", file=sys.stderr)
+        print(f"Would speak: {text}", file=sys.stderr)
+        return False
+
+def log_json(data, prefix="log"):
+    """
+    Log data to a JSON file in the logs directory.
+    
+    Args:
+        data: The data to log as JSON
+        prefix: Prefix for the log filename
+    
+    Returns:
+        str: Path to the log file
+    """
+    script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    log_dir = os.path.join(script_dir, "logs")
+    os.makedirs(log_dir, exist_ok=True)
+    
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    log_file = os.path.join(log_dir, f"{prefix}_{timestamp}.json")
+    
+    with open(log_file, "w") as f:
+        json.dump(data, f, indent=2)
+    
+    return log_file
+
 def main():
     """Main function."""
     # Read input from stdin (Claude Code passes JSON)
@@ -258,10 +320,6 @@ def main():
     # Update state document
     if extracted_info:
         update_state_document(extracted_info)
-    
-    # Continue with original stop hook behavior
-    from hooks.utils.speech import say_text, generate_completion_message
-    from hooks.utils.logger import log_json
     
     # Log the stop event
     log_json(input_data, prefix="stop")
