@@ -1,0 +1,25 @@
+feat(tooling): implement advanced Claude Code hooks with safety and observability
+
+- Added comprehensive hook system with Python scripts for each hook type
+- Implemented safety controls to block dangerous commands like rm -rf
+- Created observability logging for all agent actions
+- Added voice notifications for task completion and user input
+- Implemented chat transcript capture for analysis
+- Created parallel processing capabilities for concurrent tasks
+- Added utility libraries for text-to-speech and logging
+
+Technical details:
+- Created structured directory system with hooks/ and logs/ directories
+- Implemented five main hook types: PreToolUse, PostToolUse, Notification, Stop, SubAgentStop
+- Added utilities for text-to-speech and logging
+- Created parallel_tasks.py for running multiple tasks concurrently
+- Added comprehensive documentation in HOOKS_DOCUMENTATION.md
+
+Follows patterns from:
+- Claude Code hooks documentation
+- Advanced agent observability practices
+- Safety-first approach to agent automation
+
+Resolves: Implementation of advanced Claude Code hooks
+Files: .claude/hooks/*.py, .claude/hooks/utils/*.py, .claude/hooks.toml, .claude/HOOKS_DOCUMENTATION.md
+Tests: Basic script tests performed with echo input

@@ -1,0 +1,15 @@
+docs: refactor CLAUDE.md guidelines for Python microservices
+
+Replace TypeScript-focused guidelines with Python-specific best practices
+tailored for the microservices template. Key changes include:
+
+- Adapt coding standards for Python (type hints, PEP 8, async/await)
+- Replace vitest with pytest testing framework
+- Update tooling gates to use black, ruff, mypy instead of prettier/turbo
+- Restructure code organization for src/ directory layout
+- Add Python-specific patterns (SQLAlchemy, FastAPI, Celery, Pydantic)
+- Include hypothesis for property-based testing
+- Add QGIT instruction to save commit messages to timestamped files
+
+The guidelines now align with the actual Python microservices architecture
+while maintaining the quality standards and shortcut commands.

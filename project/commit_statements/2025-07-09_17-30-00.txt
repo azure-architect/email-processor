@@ -1,0 +1,24 @@
+feat(tooling): implement Claude Code hooks for development workflow automation
+
+- Converted manual shortcuts (QNEW, QPLAN, etc.) to proper Claude Code hooks
+- Created comprehensive hooks.toml configuration with 14 hooks
+- Added file-specific hooks for Python and test files
+- Added workflow hooks for IADPVEC methodology integration
+- Updated CLAUDE.md to document the new hook system
+- Preserved all shortcut functionality while enabling automation
+
+Technical details:
+- Configured MessageReceived hooks for command-triggered behaviors
+- Added PreToolUse and PostToolUse hooks for file operations
+- Implemented count-based hook for periodic status update reminders
+- Structured hooks.toml with clear sections and descriptions
+- Updated documentation to reference hook configuration
+
+Follows patterns from:
+- Claude Code hooks documentation
+- IADPVEC methodology workflow
+- Project management framework
+
+Resolves: Conversion of shortcuts to automated hooks
+Files: .claude/hooks.toml, CLAUDE.md
+Tests: Not applicable for configuration files

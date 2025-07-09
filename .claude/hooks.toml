@@ -1,6 +1,90 @@
 # Claude Code Hooks Configuration
-# These hooks automate the behaviors previously triggered by shortcuts
+# Advanced configuration for observability, safety, automation, and state management
 
+#==========================================================================
+# State Management Hooks - Session continuity
+#==========================================================================
+[[hooks]]
+name = "session_initialization"
+event = "MessageReceived"
+description = "Initialize new session with state context"
+[hooks.matcher]
+pattern = "SESSION_INIT"
+[hooks.action]
+command = "python .claude/hooks/session_init.py"
+
+[[hooks]]
+name = "session_finalization"
+event = "Stop"
+description = "Finalize session and update state document"
+[hooks.matcher]
+# Run for all stop events (empty matcher)
+[hooks.action]
+command = "python .claude/hooks/session_end.py"
+
+#==========================================================================
+# Safety Hooks - Block dangerous commands
+#==========================================================================
+[[hooks]]
+name = "block_dangerous_commands"
+event = "PreToolUse"
+description = "Block potentially dangerous shell commands like rm -rf"
+[hooks.matcher]
+# Run for all tools (empty matcher)
+[hooks.action]
+command = "python .claude/hooks/pre_tool_use.py"
+
+#==========================================================================
+# Observability Hooks - Log all tool executions
+#==========================================================================
+[[hooks]]
+name = "log_tool_executions"
+event = "PostToolUse"
+description = "Log all tool executions for observability"
+[hooks.matcher]
+# Run for all tools (empty matcher)
+[hooks.action]
+command = "python .claude/hooks/post_tool_use.py"
+
+#==========================================================================
+# Notification Hooks - Voice feedback
+#==========================================================================
+[[hooks]]
+name = "speak_notifications"
+event = "Notification"
+description = "Speak notifications using text-to-speech"
+[hooks.matcher]
+# Run for all notifications (empty matcher)
+[hooks.action]
+command = "python .claude/hooks/notification.py"
+
+#==========================================================================
+# Completion Hooks - Task completion notifications
+#==========================================================================
+[[hooks]]
+name = "speak_completion"
+event = "Stop"
+description = "Speak task completion notification and log transcript"
+[hooks.matcher]
+# Run for all completions (empty matcher)
+[hooks.action]
+command = "python .claude/hooks/stop.py"
+
+#==========================================================================
+# Subagent Hooks - Subagent completion notifications
+#==========================================================================
+[[hooks]]
+name = "speak_subagent_completion"
+event = "SubAgentStop"
+description = "Speak subagent task completion notification"
+[hooks.matcher]
+# Run for all subagent completions (empty matcher)
+[hooks.action]
+command = "python .claude/hooks/sub_agent_stop.py"
+
+#==========================================================================
+# Original Hooks (Command-based) - From previous implementation
+#==========================================================================
 [[hooks]]
 name = "best_practices_reminder"
 event = "MessageReceived"
@@ -110,66 +194,9 @@ Follow this checklist for writing your commit message:
 [optional footer(s)]
 """
 
-# Add file-specific hooks that trigger based on operations
-
-[[hooks]]
-name = "python_code_quality_check"
-event = "PostToolUse"
-[hooks.matcher]
-tool_name = "edit_file"
-pattern = ".*\\.py$"
-[hooks.action]
-instructions = """
-I notice you've just edited a Python file. Let me check the quality:
-
-1. Are there type hints for all parameters and return values?
-2. Is the code following PEP 8 naming conventions?
-3. Are there appropriate docstrings?
-4. Does the code handle errors properly?
-5. Is there any unnecessary complexity?
-
-I'll suggest improvements if needed.
-"""
-
-[[hooks]]
-name = "test_file_check"
-event = "PostToolUse"
-[hooks.matcher]
-tool_name = "edit_file"
-pattern = ".*test_.*\\.py$"
-[hooks.action]
-instructions = """
-I notice you've just edited a test file. Let me check the test quality:
-
-1. Are tests parameterized where appropriate?
-2. Do assertions match the test description?
-3. Are edge cases covered?
-4. Is there any unnecessary complexity?
-
-I'll suggest improvements if needed.
-"""
-
-[[hooks]]
-name = "new_file_template"
-event = "PreToolUse"
-[hooks.matcher]
-tool_name = "write_file"
-pattern = ".*\\.py$"
-[hooks.action]
-instructions = """
-I see you're creating a new Python file. I'll ensure it follows our standards:
-
-1. Include appropriate imports
-2. Add module docstring
-3. Use proper type hints
-4. Follow project structure conventions
-5. Add __future__ annotations import if needed
-
-I'll structure this file according to our best practices.
-"""
-
-# Add IADPVEC workflow hooks
-
+#==========================================================================
+# IADPVEC Workflow Hooks - From previous implementation
+#==========================================================================
 [[hooks]]
 name = "iadpvec_task_proposal"
 event = "MessageReceived"
@@ -223,4 +250,22 @@ This helps with:
 - Recording implementation details
 
 Would you like me to help create a status update?
+"""
+
+#==========================================================================
+# New Parallel Processing Hook - Run tasks in parallel
+#==========================================================================
+[[hooks]]
+name = "parallel_processing"
+event = "MessageReceived"
+[hooks.matcher]
+pattern = "PARALLEL"
+[hooks.action]
+instructions = """
+I'll help you run multiple tasks in parallel using Claude Code's subagent capabilities.
+
+Please provide the tasks you want to run in parallel, separated by semicolons (;).
+For example: "PARALLEL analyze this code; summarize this document; create a test plan"
+
+I'll split these into separate tasks and execute them concurrently, then combine the results.
 """
